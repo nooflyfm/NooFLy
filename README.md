@@ -6,7 +6,7 @@ NooFly is a free and open-source web based finance manager made to calculate own
 
 ## NooFly Sponsors
 
-We would like to extend our thanks to the following sponsors for funding NooFly development. If you are interested in becoming a sponsor, please visit the NooFly [Patreon page](https://patreon.com/panovweb).
+We would like to extend our thanks to the following sponsors for funding NooFly development. If you are interested in becoming a sponsor, please visit the NooFly [Patreon page](https://patreon.com/waxmaxweb).
 
 ## License
 
