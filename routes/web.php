@@ -17,13 +17,9 @@ use App\Http\Controllers\api\v1\AuthController;
 
 Auth::routes();
 
-// Public
-Route::get('/', [App\Http\Controllers\PublicController::class, 'index'])->name('home_public');
-Route::get('/docs', [App\Http\Controllers\PublicController::class, 'docs'])->name('docs_public');
-
 Route::group(['middleware' => ['auth']], function() {
     // Home
-    Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/stat/balances/data', [App\Http\Controllers\HomeController::class, 'cashesbalances'])->name('home_cashes_balances');
     Route::get('/stat/amounts/data', [App\Http\Controllers\HomeController::class, 'cashesamounts'])->name('home_cashes_amounts');
     Route::get('/stat/categories/data', [App\Http\Controllers\HomeController::class, 'transactionscategories'])->name('home_transactions_categories');
