@@ -32,6 +32,8 @@
 
 - XML PHP Extension
 
+- GD PHP Extension
+
 ## Installation
 
 1. Install all needable packages
