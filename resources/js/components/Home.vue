@@ -50,10 +50,34 @@
               <el-col :span="24">
                   <div class="card">
                       <div class="card-header bg-success text-white">
-                          Active cashes balances for the last 30 days
+                          Active cashes balances history
                       </div>
                       <div class="card-body">
-                          <line-chart :height="400" :chart-data="balances_data"></line-chart>
+                          <el-table :data="cashes_balances" border stripe style="width: 100%" @sort-change="filterChange">
+                              <el-table-column label="Currency" prop="currency" sortable="custom">
+                                  <template slot-scope="scope">
+                                      {{ scope.row.currency }}
+                                  </template>
+                              </el-table-column>
+                              <el-table-column label="Cash" prop="name" sortable="custom"></el-table-column>
+                              <el-table-column label="Date" prop="date"></el-table-column>
+                              <el-table-column label="Balance" prop="balance">
+                                  <template slot-scope="scope">
+                                      {{ scope.row.symbol }}{{ scope.row.balance }}
+                                  </template>
+                              </el-table-column>
+                          </el-table>
+                          <el-pagination
+                              v-if="!loading"
+                              class="pagination mt-3"
+                              background
+                              layout="prev, pager, next"
+                              :page-size="limit"
+                              :total="totalElements"
+                              :current-page.sync="number"
+                              @current-change="setCurrentPage"
+                          >
+                          </el-pagination>
                       </div>
                   </div>
               </el-col>
@@ -130,7 +154,12 @@ export default {
       page_title: 'Dashboard',
       stat_counts: [],
       balances: [],
-      balances_data: {},
+      cashes_balances: [],
+      limit: 5,
+      offset: 0,
+      totalElements: 0,
+      number: 0,
+      search: '&sort=id__ASC',
       piggybanks: [],
       cashes_amounts: [],
       categories_data: {},
@@ -157,18 +186,30 @@ export default {
     },
     async getCashesBalances() {
       try {
-        this.loading = true;
-        const {data} = await axios.get(`${this.homeurl}/stat/balances/data`)
-        this.balances_data = {
-          labels: data.items.labels,
-          datasets: data.items.datasets
-        }
+        this.loading = false;
+        const {data} = await axios.get(`${this.homeurl}/stat/balances/data/?limit=${this.limit}&offset=${this.offset}&sort=${this.search}`)
+        this.cashes_balances = data.items;
+        this.totalElements = data.total;
         this.loading = false;
       } catch (e) {
             this.loading = true;
             this.$notify.error({
                 title: 'Application error!',
             });
+      }
+    },
+    async setCurrentPage(page) {
+      this.number = page
+      this.offset = ((this.number - 1) * this.limit);
+      await this.getCashesBalances();
+    },
+    filterChange (row) {
+      if (row.order === 'ascending') {
+        this.search = `&sort=${row.prop}__DESC`
+      } else if (row.order === 'descending') {
+        this.search = `&sort=${row.prop}__ASC`
+      } else {
+        this.search = ''
       }
     },
     async getPiggybanks() {
@@ -228,6 +269,9 @@ export default {
     },
   },
   watch: {
+    async search() {
+      await this.getCashesBalances()
+    },
   },
   async mounted() {
     this.loading = false

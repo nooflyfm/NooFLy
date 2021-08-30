@@ -45,48 +45,43 @@ class HomeController extends Controller
 
     public function cashesbalances(Request $request)
     {
-        $items = Currency::where('user_id', Auth::id())->where('active', '1')->get();
-
-        $ritems = [];
-
-        $balances_labels = [];
-        $balances_data = [];
-
-        $ritems['labels'] = [];
-        $ritems['datasets'] = [];
-
-        foreach ($items as $item)
+        $order_field = 'id';
+        $order_type = 'ASC';
+        if (!empty($request->query('sort')))
         {
-            $cashes = Cash::where('user_id', Auth::id())->where('active', '1')->where('currency', $item['id'])->get();
-            if ($cashes !== null)
+            $order = explode('__', $request->query('sort'));
+            $order_field = $order[0];
+            $order_type = $order[1];
+        }
+
+        $items = [];
+        $total = 0;
+        $cashes = Cash::where('user_id', Auth::id())->where('active', '1')->orderBy($order_field, $order_type)->get();
+        if ($cashes !== null)
+        {
+            foreach ($cashes as $cash)
             {
-                foreach ($cashes as $cash)
+                $curr = Currency::where('id', $cash['currency'])->first();
+                $balances = CashesBalances::where('cash_id', $cash['id'])->orderBy('date', 'DESC')->offset($request->query('offset'))->limit($request->query('limit'))->get();
+                if ($balances !== null)
                 {
-                    $balances = CashesBalances::where('cash_id', $cash['id'])->orderby('date')->limit(30)->get();
-                    if ($balances !== null)
+                    foreach ($balances as $balance)
                     {
-                        foreach ($balances as $balance)
-                        {
-                            $ritems['labels'][] = $balance['date'];
-                            $balances_data[$cash['id']][] = $balance['balance'];
-                        }
+                        $items[] = [
+                            'name' => $cash['name'],
+                            'date'      => $balance['date'],
+                            'balance'   => $balance['balance'],
+                            'currency'  => $curr['name'],
+                            'symbol'    => \html_entity_decode($curr['symbol']),
+                        ];
                     }
-                    $colors = array_rand($this->colors);
-                    $ritems['datasets'][] = [
-                        'label' => $cash['name'] . ' (' . \html_entity_decode($item['symbol']) . ')',
-                        'backgroundColor' => $this->colors[$colors],
-                        'borderColor' => $colors,
-                        'pointBackgroundColor' => $this->colors[$colors],
-                        'pointBorderColor' => $colors,
-                        'data' => $balances_data[$cash['id']],
-                    ];
-                    $ritems['curr_symbol'][] = \html_entity_decode($item['symbol']);
                 }
             }
         }
-        $ritems['labels'] = \array_merge(\array_unique($ritems['labels']), array());
 
-        return response()->json(['items' => $ritems]);
+        $total = (CashesBalances::count() / 2);
+
+        return response()->json(['items' => $items, 'total' => $total]);
     }
 
     public function counts()
