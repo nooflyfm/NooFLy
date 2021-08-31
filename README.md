@@ -36,7 +36,7 @@
 
 ## Installation
 
-1. Install all needable packages
+1. Install all needable packages. Note that you have to configure your virtual host in the LAMP or in the LEMP (port, directory, URI routing, etc.). How to configure vhosts in these servers, you can find a lot of tutorials in the web.
 
 2. Download the script from the SourceForge or clone it from the GitHub to your 
 server's host directory
