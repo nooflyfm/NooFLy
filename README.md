@@ -8,7 +8,7 @@
 
 ## NooFly Support
 
-If you want to know how to install, update or use the script, visit the [Documentation page](https://noofly.net/docs).
+If you want to know, how to install, update or use the script, visit the [documentation page](https://noofly.net/docs).
 
 ## NooFly Sponsors
 
