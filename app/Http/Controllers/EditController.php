@@ -15,7 +15,7 @@ class EditController extends Controller
 {
     public function cash($id)
     {
-        $item = Cash::find($id);
+        $item = Cash::where('id', $id)->where('user_id', Auth::id())->get();
 
         if ($item == null)
         {
@@ -34,7 +34,7 @@ class EditController extends Controller
 
     public function savecash(Request $request, $id)
     {
-        $item = Cash::find($id);
+        $item = Cash::where('id', $id)->where('user_id', Auth::id())->first();
 
         $current_balance = $item['current_balance'];
 
@@ -46,7 +46,7 @@ class EditController extends Controller
 
         $item->save();
 
-        $item2 = CashesBalances::where('date', date('Y-m-d'))->where('cash_id', $id)->first();
+        $item2 = CashesBalances::where('date', date('Y-m-d'))->where('cash_id', $id)->get();
 
         if ($item2 !== null)
         {
@@ -82,7 +82,7 @@ class EditController extends Controller
 
             $category = 'Automatic ' . $tr_name;
 
-            $cat = TransactionCategory::where('user_id', Auth::id())->where('name', $category)->first();
+            $cat = TransactionCategory::where('user_id', Auth::id())->where('name', $category)->get();
 
             if ($cat == null)
             {
@@ -112,7 +112,7 @@ class EditController extends Controller
 
     public function activecash(Request $request, $id)
     {
-        $item = Cash::find($id);
+        $item = Cash::where('id', $id)->where('user_id', Auth::id())->first();
 
         $item->active = (int)$request->active;
 
@@ -121,7 +121,7 @@ class EditController extends Controller
 
     public function budgetcash(Request $request, $id)
     {
-        $item = Cash::find($id);
+        $item = Cash::where('id', $id)->where('user_id', Auth::id())->first();
 
         $item->in_budget = (int)$request->in_budget;
 
@@ -130,7 +130,7 @@ class EditController extends Controller
 
     public function currency($id)
     {
-        $item = Currency::find($id);
+        $item = Currency::where('id', $id)->where('user_id', Auth::id())->get();
 
         if ($item == null)
         {
@@ -151,7 +151,7 @@ class EditController extends Controller
 
     public function savecurrency(Request $request, $id)
     {
-        $item = Currency::find($id);
+        $item = Currency::where('id', $id)->where('user_id', Auth::id())->first();
 
         $item->name = (string)$request->name;
         $item->symbol = (string)$request->symbol;
@@ -162,7 +162,7 @@ class EditController extends Controller
 
     public function activecurrency(Request $request, $id)
     {
-        $item = Currency::find($id);
+        $item = Currency::where('id', $id)->where('user_id', Auth::id())->first();
 
         $item->active = (int)$request->active;
 
@@ -171,7 +171,7 @@ class EditController extends Controller
 
     public function piggybank($id)
     {
-        $item = Piggybank::find($id);
+        $item = Piggybank::where('id', $id)->where('user_id', Auth::id())->get();
 
         if ($item == null)
         {
@@ -190,7 +190,7 @@ class EditController extends Controller
 
     public function savepiggybank(Request $request, $id)
     {
-        $item = Piggybank::find($id);
+        $item = Piggybank::where('id', $id)->where('user_id', Auth::id())->first();
 
         $item->name = (string)$request->name;
         $item->balance = (double)$request->balance;
@@ -204,7 +204,7 @@ class EditController extends Controller
 
     public function activepiggybank(Request $request, $id)
     {
-        $item = Piggybank::find($id);
+        $item = Piggybank::where('id', $id)->where('user_id', Auth::id())->first();
 
         $item->active = (int)$request->active;
 
